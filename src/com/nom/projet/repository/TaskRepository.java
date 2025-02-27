@@ -3,12 +3,14 @@ package com.nom.projet.repository;
 import com.nom.projet.db.BDDSQL;
 import com.nom.projet.model.Category;
 import com.nom.projet.model.Task;
+import com.nom.projet.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TaskRepository {
@@ -75,29 +77,50 @@ public class TaskRepository {
     }
 
     //Méthode pour récupérer une task
-    public static Task findByTask(String title){
-        Category findTask = null;
-        try{
-            String sql = "SELECT id, title, content, user FROM task WHERE title = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setString(1,title);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                findTask = new Task(
-                        resultSet.getInt("id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("content"),
-                        resultSet.getString("user")
-                );
+    public static Task findByTitle(String taskTitle, Date createAt){
+        Task newTask = new Task();
+        try {
+            if (isExist(taskTitle)) {
+                String sql = "SELECT t.id AS tId,t.content,t.end_date,t.`status`,\n" +
+                        "u.id AS uId,u.firstname,u.lastname,\n" +
+                        "GROUP_CONCAT(c.id) AS catId, GROUP_CONCAT(c.category_name) AS catName\n" +
+                        "FROM task_category AS tc \n" +
+                        "INNER JOIN task AS t ON tc.task_id = t.id\n" +
+                        "INNER JOIN category AS c ON tc.category_id = c.id\n" +
+                        "INNER JOIN users AS u ON t.users_id = u.id\n" +
+                        "WHERE t.title = ? AND t.create_at = ?\n" +
+                        "GROUP BY t.id";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1, taskTitle);
+                preparedStatement.setString(2, createAt.toString());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                newTask.setId(resultSet.getInt("tId"));
+                newTask.setContent(resultSet.getString("content"));
+                newTask.setEndDate(resultSet.getDate("end_date"));
+                newTask.setCreateAt(createAt);
+                newTask.setStatus(resultSet.getBoolean("status"));
+                newTask.setTitle(taskTitle);
+                User u = new User();
+                u.setId(resultSet.getInt("uId"));
+                u.setFirstname(resultSet.getString("firstname"));
+                u.setLastname(resultSet.getString("lastname"));
+                newTask.setUser(u);
+                String[] catIdS = resultSet.getString("catId").split(",");
+                String[] catNameS = resultSet.getString("catName").split(",");
+                for(int i = 0;i<catIdS.length;i++) {
+                    Category c = new Category();
+                    c.setId(Integer.parseInt(catIdS[i]));
+                    c.setCategoryName(catNameS[i]);
+                    newTask.addCategory(c);
+                }
+            } else {
+                System.out.println("Ce compte n'existe pas.");
+                return null;
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return findTask;
+        return newTask;
     }
 
     //Méthode pour récupérer toutes les categories dans une List
