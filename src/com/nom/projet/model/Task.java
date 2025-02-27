@@ -10,7 +10,7 @@ public class Task {
      */
     private int id;
     private String title;
-    private String contente;
+    private String content;
     private Date createAt;
     private Date endDate;
     private boolean status;
@@ -21,14 +21,14 @@ public class Task {
      * Constructor
      */
 
-    public Task() {
+    public Task(int id, String title, String content, String user) {
         this.categories = new ArrayList<>();
     };
 
-    public Task(int id, String title, String contente, Date createAt, Date endDate, boolean status) {
+    public Task(int id, String title, String content, Date createAt, Date endDate, boolean status) {
         this.id = id;
         this.title = title;
-        this.contente = contente;
+        this.content = content;
         this.createAt = createAt;
         this.endDate = endDate;
         this.status = status;
@@ -55,12 +55,12 @@ public class Task {
         this.title = title;
     }
 
-    public String getContente() {
-        return contente;
+    public String getContent() {
+        return content;
     }
 
-    public void setContente(String contente) {
-        this.contente = contente;
+    public void setContent(String content) {
+        this.content = contente;
     }
 
     public Date getCreateAt() {
@@ -99,21 +99,20 @@ public class Task {
         return categories;
     }
 
+    public void addCategory(Category category){
+        this.categories.add(category);
+    }
 
-
-
+    public void removeCategory(Category category){
+        this.categories.remove(category);
+    }
 
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", contente='" + contente + '\'' +
-                ", createAt=" + createAt +
-                ", endDate=" + endDate +
-                ", status=" + status +
+                "title='" + title + '\'' +
+                ", content='" + content + '\'' +
                 ", user=" + user +
-                ", categories=" + categories +
                 '}';
     }
 }

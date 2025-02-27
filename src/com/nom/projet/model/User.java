@@ -9,6 +9,7 @@ public class User {
     private String lastname;
     private String email;
     private String password;
+    private Roles roles;
 
     /*
      * CONSTRUCTEURS
@@ -74,6 +75,14 @@ public class User {
         this.password = password;
     }
 
+    public Roles getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Roles roles) {
+        this.roles = roles;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -81,6 +90,8 @@ public class User {
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }

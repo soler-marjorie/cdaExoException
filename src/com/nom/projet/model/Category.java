@@ -11,7 +11,7 @@ public class Category {
      * CONSTRUCTOR
      */
 
-    public Category() {};
+    public Category(int id, String categoryName) {};
 
     /*
      * GETTERS SETTERS
